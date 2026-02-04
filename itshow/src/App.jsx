@@ -1,16 +1,20 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Home from "./page/home";
 
-import './App.css'
-
-export default function App() {
+function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
-        </Routes>
-      </Layout>
+      <Routes>
+        {/* default entry */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+
+        <Route path="/home" element={<Home />} />
+
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
     </BrowserRouter>
-  )
+  );
 }
+
+export default App;
