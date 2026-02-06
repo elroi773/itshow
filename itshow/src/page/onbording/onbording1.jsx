@@ -1,22 +1,16 @@
 import React, { useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import "./onbording3.css";
+import { useNavigate } from "react-router-dom";
+import "./onbording1.css";
 import Navigate from "../../component/navigate";
 
-export default function OnBording3() {
+export default function OnBording1() {
   const navigate = useNavigate();
-  const location = useLocation();
+  const [name, setName] = useState("");
 
-  // onbording1/onbording2 에서 넘어온 이름(우선순위: route state -> localStorage)
-  const routeName = location?.state?.name;
-  const storedName =
-    typeof window !== "undefined" ? localStorage.getItem("joinName") : "";
-  const userName = (routeName || storedName || "회원").trim();
-
-  // 카드/계좌 중 한 가지 선택
-  const [method, setMethod] = useState(null); // 'card' | 'account' | null
-
-  const isValid = useMemo(() => method === "card" || method === "account", [method]);
+  const isValid = useMemo(() => {
+    const trimmed = name.trim();
+    return trimmed.length > 0 && trimmed.length <= 20;
+  }, [name]);
 
   return (
     <main className="join1-page">
@@ -38,98 +32,35 @@ export default function OnBording3() {
       </div>
 
       {/* Card */}
-      <section className="join1-card" aria-label="회원가입 3단계">
+      <section className="join1-card" aria-label="회원가입 1단계">
         <div className="join1-progressRow">
-          <span className="join1-progressNow">03</span>
+          <span className="join1-progressNow">01</span>
           <span className="join1-progressSlash">/</span>
           <span className="join1-progressTotal">03</span>
         </div>
 
         <div className="join1-titleBlock">
-          {/* (요청) onbording1 에서 받아온 이름을 여기(42번 줄 자리)에 표시 */}
-          <p className="join1-kicker">{userName} 님의 소비 데이터를 불러오기 위한 마지막 단계</p>
-          <h1 className="join1-title">
-            자동으로 지출을 분석하기 위해 카드 또는 계좌를 연결해주세요
-          </h1>
+          <p className="join1-kicker">OOO과 함께할 첫 번째 단계</p>
+          <h1 className="join1-title">회원님을 어떻게 불러 드릴까요?</h1>
         </div>
 
-        <div className="join3-block">
-          <p className="join3-label">서비스와 연결할 수단을 선택해주세요</p>
-          <p className="join3-helper">카드와 계좌 중 한 가지만 선택할 수 있어요</p>
+        <div className="join1-formBlock">
+          <label htmlFor="join-name" className="join1-label">
+            사용할 이름이나 닉네임을 알려주세요
+          </label>
 
-          <div className="join3-options" role="group" aria-label="연결 수단 선택">
-            <button
-              type="button"
-              className={`join3-option ${method === "card" ? "is-on" : ""}`}
-              onClick={() => setMethod((prev) => (prev === "card" ? null : "card"))}
-            >
-              <span className="join3-optionInner">
-                <span className="join3-icon" aria-hidden="true">
-                  {/* 카드 아이콘 */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3 8.5C3 6.567 4.567 5 6.5 5H17.5C19.433 5 21 6.567 21 8.5V15.5C21 17.433 19.433 19 17.5 19H6.5C4.567 19 3 17.433 3 15.5V8.5Z"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                    <path
-                      d="M3 9.2H21"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M7 14.7H11"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-                <span className="join3-optionText">카드</span>
-              </span>
-            </button>
+          <input
+            id="join-name"
+            name="join-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="최대 20자"
+            maxLength={20}
+            autoComplete="nickname"
+            className="join1-input"
+          />
 
-            <button
-              type="button"
-              className={`join3-option ${method === "account" ? "is-on" : ""}`}
-              onClick={() => setMethod((prev) => (prev === "account" ? null : "account"))}
-            >
-              <span className="join3-optionInner">
-                <span className="join3-icon" aria-hidden="true">
-                  {/* 계좌(지갑) 아이콘 */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M5.5 7C4.12 7 3 8.12 3 9.5V16.5C3 17.88 4.12 19 5.5 19H18.5C19.88 19 21 17.88 21 16.5V10.5C21 9.12 19.88 8 18.5 8H6.8C6.25 8 5.73 7.78 5.34 7.39C4.95 7 4.73 6.48 4.73 5.93C4.73 5.38 4.95 4.86 5.34 4.47C5.73 4.08 6.25 3.86 6.8 3.86H17"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M17 13.2H18.6"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-                <span className="join3-optionText">계좌</span>
-              </span>
-            </button>
-          </div>
+          <p className="join1-helper">입력한 이름 · 닉네임으로 기록이 저장돼요</p>
 
           <button
             type="button"
@@ -137,8 +68,9 @@ export default function OnBording3() {
             className={`join1-button ${isValid ? "is-enabled" : "is-disabled"}`}
             onClick={() => {
               if (!isValid) return;
-              // 다음 화면이 준비되어 있으면 해당 라우트로 변경해도 됨
-              navigate("/home", { state: { name: userName, method } });
+              const trimmed = name.trim();
+              localStorage.setItem("joinName", trimmed);
+              navigate("/onbording2", { state: { name: trimmed } });
             }}
           >
             확인
