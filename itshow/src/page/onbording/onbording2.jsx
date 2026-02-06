@@ -1,45 +1,17 @@
-import React, { useMemo, useState } from "react";
-import { useLocation,useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./onbording2.css";
 import Check from "../../component/check";
 import Navigate from "../../component/navigate";
 
 const GOALS = [
-  {
-    key: "impulse",
-    title: "충동 구매 줄이기",
-    desc: "필요한 것만 사고, 즉흥 구매는 줄일래요",
-  },
-  {
-    key: "fix",
-    title: "소소한 지출 관리",
-    desc: "배달/커피 등 작은 지출을 줄이고 싶어요",
-  },
-  {
-    key: "habit",
-    title: "습관 개선하기",
-    desc: "소비 습관을 천천히 바꿔보고 싶어요",
-  },
-  {
-    key: "plan",
-    title: "계획적인 소비",
-    desc: "소비 기준을 정해두고 지킬래요",
-  },
-  {
-    key: "track",
-    title: "소비 점검하기",
-    desc: "무엇에 쓰는지 먼저 파악하고 싶어요",
-  },
-  {
-    key: "safe",
-    title: "건전한 소비하기",
-    desc: "불필요한 지출을 줄이고 싶어요",
-  },
-  {
-    key: "goal",
-    title: "목적 있는 소비하기",
-    desc: "목표를 세우고 소비 습관을 만들고 싶어요",
-  },
+  { key: "impulse", title: "충동 구매 줄이기", desc: "필요한 것만 사고, 즉흥 구매는 줄일래요" },
+  { key: "fix", title: "소소한 지출 관리", desc: "배달/커피 등 작은 지출을 줄이고 싶어요" },
+  { key: "habit", title: "습관 개선하기", desc: "소비 습관을 천천히 바꿔보고 싶어요" },
+  { key: "plan", title: "계획적인 소비", desc: "소비 기준을 정해두고 지킬래요" },
+  { key: "track", title: "소비 점검하기", desc: "무엇에 쓰는지 먼저 파악하고 싶어요" },
+  { key: "safe", title: "건전한 소비하기", desc: "불필요한 지출을 줄이고 싶어요" },
+  { key: "goal", title: "목적 있는 소비하기", desc: "목표를 세우고 소비 습관을 만들고 싶어요" },
 ];
 
 const CHIPS = {
@@ -66,34 +38,71 @@ const CHIPS = {
 export default function OnBording2() {
   const location = useLocation();
   const navigate = useNavigate();
+
   const routeName = location?.state?.name;
-  const storedName = typeof window !== "undefined" ? localStorage.getItem("joinName") : "";
+  const storedName =
+    typeof window !== "undefined" ? localStorage.getItem("joinName") : "";
   const userName = (routeName || storedName || "회원").trim();
 
-  const [selectedGoal, setSelectedGoal] = useState(null);
-  // 기준 선택(월 별/단기 기간/급여)은 기본 선택값 없이 시작(사용자가 직접 선택)
-  const [payType, setPayType] = useState(null);
-  const [term, setTerm] = useState(null);
-  const [salary, setSalary] = useState(null);
-  const [selectedCats, setSelectedCats] = useState([]);
-  const [amount, setAmount] = useState("");
+  const STORAGE_KEY = "onbording2Form";
+
+  const initial = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const [selectedGoal, setSelectedGoal] = useState(initial.selectedGoal ?? null);
+  const [payType, setPayType] = useState(initial.payType ?? null);
+  const [term, setTerm] = useState(initial.term ?? null);
+  const [salary, setSalary] = useState(initial.salary ?? null);
+  const [selectedCats, setSelectedCats] = useState(
+    Array.isArray(initial.selectedCats) ? initial.selectedCats : []
+  );
+  const [amount, setAmount] = useState(() => {
+    const n = Number(initial.amount ?? 0);
+    return n > 0 ? n.toLocaleString() : "";
+  });
 
   const amountNumber = useMemo(() => {
     const n = Number(String(amount).replace(/[^0-9]/g, ""));
     return Number.isFinite(n) ? n : 0;
   }, [amount]);
 
+  // ✅ 페이지 이동해도 값 유지
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          selectedGoal,
+          payType,
+          term,
+          salary,
+          selectedCats,
+          amount: amountNumber,
+        })
+      );
+    } catch {
+      // ignore
+    }
+  }, [selectedGoal, payType, term, salary, selectedCats, amountNumber]);
+
   const isValid = useMemo(() => {
     return Boolean(selectedGoal) && amountNumber > 0;
   }, [selectedGoal, amountNumber]);
 
   const toggleCat = (c) => {
-    setSelectedCats((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
+    setSelectedCats((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
+    );
   };
 
   return (
     <main className="join1-page">
-      {/* Top Icon */}
       <div className="join1-iconWrap" aria-hidden="true">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +119,6 @@ export default function OnBording2() {
         </svg>
       </div>
 
-      {/* Card */}
       <section className="join1-card join2-card" aria-label="회원가입 2단계">
         <div className="join1-progressRow">
           <span className="join1-progressNow">02</span>
@@ -123,7 +131,6 @@ export default function OnBording2() {
           <h1 className="join1-title">어떤 목표를 설정해 볼까요?</h1>
         </div>
 
-        {/* Goal Select */}
         <div className="join2-block">
           <p className="join2-subtitle">만들고 싶은 목표를 선택해 주세요</p>
           <p className="join2-subhelp">복수 선택이 아닌 하나만 선택할 수 있어요</p>
@@ -142,7 +149,6 @@ export default function OnBording2() {
           </div>
         </div>
 
-        {/* 기준 선택 */}
         <div className="join2-block">
           <p className="join2-subtitle">소비 목표의 필요한 기준을 선택해 주세요</p>
           <p className="join2-subhelp">선택 값은 이후 추천 및 분석에 반영될 수 있어요</p>
@@ -221,7 +227,6 @@ export default function OnBording2() {
           </div>
         </div>
 
-        {/* Amount */}
         <div className="join2-block">
           <p className="join2-subtitle">{userName} 님의 소비 목표를 위한 금액을 입력해 주세요</p>
           <input
@@ -230,13 +235,8 @@ export default function OnBording2() {
             placeholder="예) 100,000"
             value={amount}
             onChange={(e) => {
-              const v = e.target.value;
-              // 숫자만 남기고(콤마 포함 모든 문자 제거) 천 단위 콤마 포맷
-              const digits = v.replace(/[^0-9]/g, "");
-              if (digits === "") {
-                setAmount("");
-                return;
-              }
+              const digits = e.target.value.replace(/[^0-9]/g, "");
+              if (digits === "") return setAmount("");
               const n = Number(digits);
               setAmount(Number.isFinite(n) ? n.toLocaleString() : "");
             }}
@@ -271,7 +271,6 @@ export default function OnBording2() {
         </button>
       </section>
 
-      {/* Bottom Nav */}
       <Navigate />
     </main>
   );
