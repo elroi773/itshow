@@ -1,15 +1,19 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./onbording1.css";
 import Navigate from "../../component/navigate";
 
 export default function OnBording1() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [name, setName] = useState(() => localStorage.getItem("joinName") ?? "");
 
   const isValid = useMemo(() => {
     const trimmed = name.trim();
     return trimmed.length > 0 && trimmed.length <= 20;
+  }, [name]);
+
+  useEffect(() => {
+    localStorage.setItem("joinName", name);
   }, [name]);
 
   return (
