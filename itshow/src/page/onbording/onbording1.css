@@ -1,4 +1,4 @@
-/* join1.css */
+/* onbording1.css */
 
 *, *::before, *::after{
   margin: 0;
@@ -92,6 +92,7 @@ html, body {
 }
 
 .join1-kicker {
+  font-weight: 400;
   margin: 0;
   font-size: 14px;
   line-height: 1.4;
@@ -101,9 +102,11 @@ html, body {
 .join1-title {
   margin: 8px 0 0;
   font-size: 18px;
-  line-height: 1.35;
+  /* line-height: 1.35; */
   font-weight: 700;
   color: rgba(255, 255, 255, 0.92);
+  font-style: normal;
+  line-height: 32px;
 }
 
 .join1-formBlock {
@@ -114,7 +117,7 @@ html, body {
   display: block;
   margin: 0 0 10px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   color: rgba(255, 255, 255, 0.86);
 }
 
