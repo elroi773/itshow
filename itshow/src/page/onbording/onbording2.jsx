@@ -4,14 +4,16 @@ import "./onbording2.css";
 import Check from "../../component/check";
 import Navigate from "../../component/navigate";
 
-const GOALS = [
+const buildGoals = (userName) => [
   { key: "impulse", title: "충동 구매 줄이기", desc: "필요한 것만 사고, 즉흥 구매는 줄일래요" },
-  { key: "fix", title: "소소한 지출 관리", desc: "배달/커피 등 작은 지출을 줄이고 싶어요" },
+  { key: "fix", title: "소소한 지출 관리", desc: "배달 음식 등 작은 소비를 줄이고 싶어요" },
   { key: "habit", title: "습관 개선하기", desc: "소비 습관을 천천히 바꿔보고 싶어요" },
-  { key: "plan", title: "계획적인 소비", desc: "소비 기준을 정해두고 지킬래요" },
-  { key: "track", title: "소비 점검하기", desc: "무엇에 쓰는지 먼저 파악하고 싶어요" },
-  { key: "safe", title: "건전한 소비하기", desc: "불필요한 지출을 줄이고 싶어요" },
-  { key: "goal", title: "목적 있는 소비하기", desc: "목표를 세우고 소비 습관을 만들고 싶어요" },
+  { key: "plan", title: "계획적인 소비", desc: "소비 기준을 정해두고 쓰고 싶어요" },
+  { key: "track", title: "소비 점검하기", desc: "주로 어디에 소비하는지 확인하고 싶어요" },
+  { key: "safe", title: "천천히 소비하기", desc: "생각하면서 여유롭게 소비하고 싶어요" },
+  { key: "goal", title: "목적 있는 소비하기", desc: "나에게 의미 있는 소비만 하고 싶어요" },
+  { key: "low_fix", title: "고정 지출 줄여보기", desc: "매달 나가는 돈부터 정리해보고 싶어요" },
+  { key: "self", title: "직접 입력", desc: `${userName}님만의 소비 목표를 입력해 주세요` },
 ];
 
 const CHIPS = {
@@ -44,6 +46,8 @@ export default function OnBording2() {
     typeof window !== "undefined" ? localStorage.getItem("joinName") : "";
   const userName = (routeName || storedName || "회원").trim();
 
+  const GOALS = useMemo(() => buildGoals(userName), [userName]);
+
   const STORAGE_KEY = "onbording2Form";
 
   const initial = useMemo(() => {
@@ -55,7 +59,11 @@ export default function OnBording2() {
     }
   }, []);
 
-  const [selectedGoal, setSelectedGoal] = useState(initial.selectedGoal ?? null);
+  const [selectedGoals, setSelectedGoals] = useState(() => {
+    const v = initial.selectedGoals ?? initial.selectedGoal ?? [];
+    if (Array.isArray(v)) return v;
+    return v ? [v] : [];
+  });
   const [payType, setPayType] = useState(initial.payType ?? null);
   const [term, setTerm] = useState(initial.term ?? null);
   const [salary, setSalary] = useState(initial.salary ?? null);
@@ -78,7 +86,7 @@ export default function OnBording2() {
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
-          selectedGoal,
+          selectedGoals,
           payType,
           term,
           salary,
@@ -89,16 +97,24 @@ export default function OnBording2() {
     } catch {
       // ignore
     }
-  }, [selectedGoal, payType, term, salary, selectedCats, amountNumber]);
+  }, [selectedGoals, payType, term, salary, selectedCats, amountNumber]);
 
   const isValid = useMemo(() => {
-    return Boolean(selectedGoal) && amountNumber > 0;
-  }, [selectedGoal, amountNumber]);
+    return selectedGoals.length > 0 && amountNumber > 0;
+  }, [selectedGoals, amountNumber]);
 
   const toggleCat = (c) => {
     setSelectedCats((prev) =>
       prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
     );
+  };
+  const toggleGoal = (key) => {
+    setSelectedGoals((prev) => {
+      const on = prev.includes(key);
+      if (on) return prev.filter((x) => x !== key);
+      if (prev.length >= 2) return prev; // max 2
+      return [...prev, key];
+    });
   };
 
   return (
@@ -131,18 +147,18 @@ export default function OnBording2() {
           <h1 className="join1-title">어떤 목표를 설정해 볼까요?</h1>
         </div>
 
-        <div className="join2-block">
-          <p className="join2-subtitle">만들고 싶은 목표를 선택해 주세요</p>
-          <p className="join2-subhelp">복수 선택이 아닌 하나만 선택할 수 있어요</p>
+        <div className="join2-block1">
+          <p className="join2-subtitle1">만들고 싶은 목표를 선택해 주세요</p>
+          <p className="join2-subhelp">최대 2개 까지 선택 할 수 있어요</p>
 
           <div className="goalGrid" role="list">
             {GOALS.map((g) => (
-              <div key={g.key} role="listitem">
+              <div key={g.key} role="listitem" className="goalItem">
                 <Check
                   title={g.title}
                   description={g.desc}
-                  selected={selectedGoal === g.key}
-                  onClick={() => setSelectedGoal(g.key)}
+                  selected={selectedGoals.includes(g.key)}
+                  onClick={() => toggleGoal(g.key)}
                 />
               </div>
             ))}
@@ -257,7 +273,7 @@ export default function OnBording2() {
             navigate("/onbording3", {
               state: {
                 name: userName,
-                selectedGoal,
+                selectedGoals,
                 payType,
                 term,
                 salary,
