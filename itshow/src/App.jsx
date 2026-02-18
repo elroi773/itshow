@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Home from "./page/home";
+import Home from "./page/./home/home";
 import OnBording from "./page/onbording/onbording1";
 import OnBording2 from "./page/onbording/onbording2";
 import OnBording3 from "./page/onbording/onbording3";
