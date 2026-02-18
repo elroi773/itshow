@@ -8,7 +8,6 @@ import ConsumptionAnalysisIcon from "../assets/menu/ConsumptionAnalysis.svg";
 import BudgetGoalIcon from "../assets/menu/BudgetGoal.svg";
 import ConsumptionCoachIcon from "../assets/menu/ConsumptionCoach.svg";
 
-// NOTE: routes are placeholders. Change `to` paths to match your router.
 const MENU = [
   { key: "home", label: "홈", icon: HomeIcon, to: "/" },
   { key: "consumption-management", label: "소비관리", icon: ConsumptionManagementIcon, to: "/consumption-management" },
@@ -23,14 +22,13 @@ function guessActiveKey(pathname) {
   if (pathname.startsWith("/consumption-analysis")) return "consumption-analysis";
   if (pathname.startsWith("/budget-goal")) return "budget-goal";
   if (pathname.startsWith("/consumption-coach")) return "consumption-coach";
-  return "consumption-management"; // screenshot default
+  return "consumption-management";
 }
 
 export default function Menu() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // onbording1.jsx passes name via navigate state; fallback to localStorage
   const nameFromState = location?.state?.name;
   const [name, setName] = useState(() => nameFromState ?? localStorage.getItem("joinName") ?? "");
 
@@ -71,7 +69,6 @@ export default function Menu() {
           <div className="menu-avatar" aria-hidden="true" />
           <div className="menu-profileText">
             <p className="menu-name">{(name || "사용자")} 님</p>
-            {/* 메일 주소는 지금은 구현하지 않음 */}
           </div>
           <button
             type="button"
